@@ -56,7 +56,8 @@ export function input(inputText) {
  * basic operations on Turing machines
  */
 
-export function read() { return config.read(); }
+export function read(x) { return x ? ((config.read() == x) ? x : false) : config.read(); }
+export function isMarked(m) { return config.isMark(m); }
 export function write(a) { pushConfig(config.write(a)); };
 
 export function right() { pushConfig(config.right()); }
@@ -97,10 +98,36 @@ export function mvtomark(x) {
     while (!config.isMark(x) && config.cursorPosition >= 0)
         left();
 
-    if (config.cursorPosition == 0)
+    if (config.cursorPosition == 0 && !config.isMark(x))
         throw x + " not found in mvto!"
 }
 
+export function mvtounmark(x) {
+    rightmost();
+
+    while (config.cursorPosition > 0) {
+        for (const m of x) {
+            if (isMarked(m))
+                unmark(m);
+        }
+        left();
+    }
+}
+
+
+
+export function markmvleft(x) {
+    unmark(x);
+    left(x);
+    mark(x);
+}
+
+
+export function markmvright(x) {
+    unmark(x);
+    right(x);
+    mark(x);
+}
 
 
 export function mvtomarkleft(x) {

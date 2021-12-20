@@ -5,8 +5,24 @@ import {
 
 
 export default class TMLBlock {
+
+
+    /**
+ * go out to the left
+ */
+    static left() {
+        while (isDigit(read()) || read() == " ") {
+            left();
+        }
+    }
+
+
+
+    /**
+     * go out to the right
+     */
     static right() {
-        while (isDigit(read())) {
+        while (isDigit(read()) || read() == " ") {
             right();
         }
     }
@@ -95,8 +111,39 @@ export default class TMLBlock {
 
 
 
+    /**
+     * 
+     * @param {*} x 
+     * @returns true if the current block is equal to the one marked by x
+     */
+    static equal(x) {
+        mark("dest");
 
+        mvtomark(x);
+        mark("src");
 
+        let found = true;
+        while (isDigit(read())) {
+            const a = read();
+            mvtomark("dest");
+            if (a != read()) {
+                unmark("dest");
+                mvtomark("src");
+                unmark("src");
+                found = false;
+                break;
+            }
+            unmark("dest");
+            right();
+            mark("dest");
+            mvtomark("src");
+            unmark("src");
+            right();
+            mark("src");
+        }
+
+        return found;
+    }
 
 
 
@@ -107,7 +154,7 @@ export default class TMLBlock {
  */
     static allocateWithAddress(symbol, u) {
         rightmost();
-        write("$")
+        write("$");
         right();
 
         write(symbol);
@@ -121,17 +168,30 @@ export default class TMLBlock {
     }
 
 
-
+    /**
+     * 
+     * @param {*} u 
+     * @description a new block with "0" marked with u
+     */
     static allocate(u) {
         rightmost();
-
+        write("$");
         right();
         mark(u);
         write("0");
     }
 
 
-
+    static freeRightMostBlock(x) {
+        rightmost();
+        left();
+        while (isDigit(read()) || read() == " ") {
+            write("");
+            unmark(x);
+            left();
+        }
+        write("");
+    }
 
     /**
      * 
@@ -148,6 +208,16 @@ export default class TMLBlock {
 
 
 
+    static erase() {
+        mark("dest");
+        while (isDigit(read())) {
+            write(" ");
+            right();
+        }
+        mvtomark("dest");
+        unmark("dest");
+    }
+
     /**
      * 
      * @param {*} x 
@@ -155,6 +225,7 @@ export default class TMLBlock {
      * the cursor will be one cell after the end of the new copy block
      */
     static copy(x) {
+        this.erase();
         mark("dest");
 
         mvtomark(x);

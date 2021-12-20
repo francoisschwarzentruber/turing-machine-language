@@ -1,6 +1,6 @@
 import {
-    input, read, write, left, right, leftmost, rightmost, equal,accept, reject,
-    mark, unmark, mvtomark, isDigit, isLeftMost, execution, init, comment, choose, mvtomarkleft
+    input, read, write, left, right, leftmost, rightmost, equal, accept, reject,
+    mark, unmark, mvtomark, isMarked, mvtounmark, isDigit, isLeftMost, execution, init, comment, choose, mvtomarkleft
 } from "./tml.js";
 
 import TMLBlock from "./tmlblock.js";
@@ -21,15 +21,23 @@ function run() {
     try {
         eval(program.value);
     }
-    catch(e) {
+    catch (e) {
         console.log(e);
     }
-    
+
     slider.value = 0;
     sliderEvent();
 }
 
 
+
+
+async function loadProgram(name) {
+    const f = await fetch(`programs/${name}.js`);
+    const t = await f.text();
+    const t2 = t.split("\n").filter((line) => !line.startsWith("import")).join("\n");
+    program.value = t2;
+}
 
 window.onload = () => {
     slider.onchange = sliderEvent;
@@ -42,10 +50,14 @@ window.onload = () => {
 
     sliderEvent();
 
+    loadProgram("dijkstra");
+
+
 }
 
 
 function _showConfig(config) {
+    const cellsize = 32;
     const ctx = canvas.getContext("2d");
     ctx.fillStyle = "white";
     ctx.lineWidth = "1px";
@@ -53,8 +65,8 @@ function _showConfig(config) {
 
     for (let i = 0; i < 128; i++) {//config.length + 11
         const nbcolumn = 24;
-        let y = (i / nbcolumn) * 64 + 32;
-        let x = i % nbcolumn * 32 + 16;
+        let y = (i / nbcolumn) * cellsize*2 + 32;
+        let x = i % nbcolumn * cellsize + 16;
 
         const getStyle = (char) => {
             const colors = {};
@@ -70,19 +82,19 @@ function _showConfig(config) {
             return colors[char] ? colors[char] : "white";
         }
 
-        const x2 = x + 32;
-        const y2 = y + 64 / nbcolumn;
+        const x2 = x + cellsize;
+        const y2 = y + cellsize*2 / nbcolumn;
 
         if (i % nbcolumn == 0 && i > 0) {
             ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.moveTo(x, y);
-            ctx.lineTo(x - 8, y - 1 / 4 * 64 / nbcolumn);
+            ctx.lineTo(x - cellsize/4, y - 1 / 4 * cellsize*2 / nbcolumn);
             ctx.stroke();
 
             ctx.beginPath();
-            ctx.moveTo(x, y + 32);
-            ctx.lineTo(x - 8, y + 32 - 1 / 4 * 64 / nbcolumn);
+            ctx.moveTo(x, y + cellsize);
+            ctx.lineTo(x - cellsize/4, y + cellsize - 1 / 4 * 2*cellsize / nbcolumn);
             ctx.stroke();
         }
 
@@ -90,21 +102,21 @@ function _showConfig(config) {
         if ((i % nbcolumn) == nbcolumn - 1) {
             ctx.lineWidth = 1;
             ctx.beginPath();
-            ctx.moveTo(x + 32, y2);
-            ctx.lineTo(x + 32 + 8, y2 + 1 / 4 * 64 / nbcolumn);
+            ctx.moveTo(x + cellsize, y2);
+            ctx.lineTo(x + cellsize + cellsize/4, y2 + 1 / 4 * 2*cellsize / nbcolumn);
             ctx.stroke();
 
             ctx.beginPath();
-            ctx.moveTo(x + 32, y2 + 32);
-            ctx.lineTo(x + 32 + 8, y2 + 32 + 1 / 4 * 64 / nbcolumn);
+            ctx.moveTo(x + cellsize, y2 + cellsize);
+            ctx.lineTo(x + cellsize + cellsize/4, y2 + cellsize + 1 / 4 * 2*cellsize / nbcolumn);
             ctx.stroke();
         }
 
         ctx.beginPath();
         ctx.moveTo(x, y);
         ctx.lineTo(x2, y2);
-        ctx.lineTo(x2, y2 + 32);
-        ctx.lineTo(x, y + 32);
+        ctx.lineTo(x2, y2 + cellsize);
+        ctx.lineTo(x, y + cellsize);
         ctx.lineTo(x, y);
         ctx.fillStyle = getStyle(config.getChar(i));
         //ctx.fillRect(x, y, 32, 32);
@@ -120,14 +132,14 @@ function _showConfig(config) {
         ctx.fillStyle = "black";
         ctx.textAlign = "center";
         ctx.font = '10px Arial';
-        ctx.fillText(i, x + 16, y);
+        ctx.fillText(i, x + cellsize/2, y);
 
 
         ctx.font = '20px Arial';
-        ctx.fillText(config.getChar(i), x + 16, y + 20);
+        ctx.fillText(config.getChar(i), x + cellsize/2, y + cellsize*0.7);
 
         ctx.font = '10px Arial';
-        ctx.fillText(config.getMarks(i), x + 16, y + 30);
+        ctx.fillText(config.getMarks(i), x + cellsize/2, y + cellsize-4);
 
     }
 }
