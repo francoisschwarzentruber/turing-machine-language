@@ -6,7 +6,7 @@ Turing machine language. A (somehow) high-level language to describe programs ru
 - [ ] Mathematical function (polynomials, etc.)
 
 
-## Core language
+## Core language
 
 - `left()` move the head left
 - `right()` move the head right
