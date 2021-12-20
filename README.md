@@ -1,5 +1,5 @@
 # Turing machine language
-This repository contains a Turing machine simulator for programs written in TML, see https://francoisschwarzentruber.github.io/tml/. TML is a (somehow) high-level language to describe programs running on Turing machines. The project TML can be seen a sort of C for Turing machines.  The aim is pedagogical. In particular, this tool implements:
+This repository contains a Turing machine simulator for programs written in a somehow high-level language called TML, see https://francoisschwarzentruber.github.io/turing-machine-language. TML is a (somehow) high-level language to describe programs running on Turing machines. The project TML can be seen a sort of C for Turing machines.  The aim is pedagogical. In particular, this tool implements:
 - [X] a non-deterministic machine for 3-coloring
 - [X] Dijkstra's algorithm
 - [ ] a non-deterministic machine for SAT
