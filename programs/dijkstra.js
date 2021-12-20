@@ -4,6 +4,14 @@ import TMLMath from "../tmlmath";
 
 //Dijkstra algorithm :)
 input("#0-1:5#1-2:1#0-2:7");
+/**
+ * the input is the graph
+ * 
+ *    0 ---- weight = 5 ----> 1 ----- weight = 1 ----> 2
+ *    |                                                ^
+ *    -------------------weight = 7 -------------------|
+ * 
+ */
 
 right();
 

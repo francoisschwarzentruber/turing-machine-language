@@ -61,7 +61,7 @@ function _showConfig(config) {
     const ctx = canvas.getContext("2d");
     ctx.fillStyle = "white";
     ctx.lineWidth = "1px";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     for (let i = 0; i < 128; i++) {//config.length + 11
         const nbcolumn = 24;
