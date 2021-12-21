@@ -6,9 +6,14 @@ import {
 import TMLBlock from "./tmlblock.js";
 import TMLMath from "./tmlmath.js";
 
+
+let lastConfig = undefined;
+
+
 const sliderEvent = () => {
     const config = execution[slider.value];
     _showConfig(config);
+    lastConfig = config;
     commentElement.innerHTML = config.comment;
     window.config = config;
     t.innerHTML = "t = " + slider.value;
@@ -44,7 +49,7 @@ window.onload = () => {
     slider.oninput = sliderEvent;
     slider.max = 0;
     runButton.onclick = run;
-
+    setup();
     init();
     input("Welcome!");
 
@@ -55,91 +60,78 @@ window.onload = () => {
 
 }
 
+const domTape = [];
+let domCursor = undefined;
 
-function _showConfig(config) {
-    const cellsize = 32;
-    const ctx = canvas.getContext("2d");
-    ctx.fillStyle = "white";
-    ctx.lineWidth = "1px";
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+const getDomPosition = (ii) => {
+    const cellsize = 35;
+    const nbcolumn = 50;
+    const i = ii;//ii - config.cursorPosition + nbcolumn + nbcolumn / 2;
+    let y = Math.floor(i / nbcolumn) * cellsize * 2 + 32;
+    let x = i % nbcolumn * cellsize + 16;
+    return { x: x, y: y };
+}
 
+
+
+function setup() {
     for (let i = 0; i < 128; i++) {//config.length + 11
-        const nbcolumn = 24;
-        let y = (i / nbcolumn) * cellsize*2 + 32;
-        let x = i % nbcolumn * cellsize + 16;
+        if (domTape[i] == undefined) {
+            domTape[i] = document.createElement("div");
+            domTape[i].classList.add("cell");
+            const pos = getDomPosition(i);
+            domTape[i].style.left = pos.x + "px";
+            domTape[i].style.top = pos.y + "px";
+            graphics.appendChild(domTape[i]);
 
-        const getStyle = (char) => {
-            const colors = {};
-            colors["#"] = "red";
-            colors["$"] = "orange";
-            colors["-"] = "yellow";
-
-            if (isDigit(char))
-                return "lightcyan";
-
-            if (char.endsWith(":"))
-                return "lightgreen";
-            return colors[char] ? colors[char] : "white";
+            const id = document.createElement("div");
+            id.innerHTML = i;
+            id.classList.add("id");
+            id.style.left = pos.x + "px";
+            id.style.top = pos.y -13 + "px";
+            graphics.appendChild(id);
         }
-
-        const x2 = x + cellsize;
-        const y2 = y + cellsize*2 / nbcolumn;
-
-        if (i % nbcolumn == 0 && i > 0) {
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(x, y);
-            ctx.lineTo(x - cellsize/4, y - 1 / 4 * cellsize*2 / nbcolumn);
-            ctx.stroke();
-
-            ctx.beginPath();
-            ctx.moveTo(x, y + cellsize);
-            ctx.lineTo(x - cellsize/4, y + cellsize - 1 / 4 * 2*cellsize / nbcolumn);
-            ctx.stroke();
-        }
-
-
-        if ((i % nbcolumn) == nbcolumn - 1) {
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(x + cellsize, y2);
-            ctx.lineTo(x + cellsize + cellsize/4, y2 + 1 / 4 * 2*cellsize / nbcolumn);
-            ctx.stroke();
-
-            ctx.beginPath();
-            ctx.moveTo(x + cellsize, y2 + cellsize);
-            ctx.lineTo(x + cellsize + cellsize/4, y2 + cellsize + 1 / 4 * 2*cellsize / nbcolumn);
-            ctx.stroke();
-        }
-
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-        ctx.lineTo(x2, y2);
-        ctx.lineTo(x2, y2 + cellsize);
-        ctx.lineTo(x, y + cellsize);
-        ctx.lineTo(x, y);
-        ctx.fillStyle = getStyle(config.getChar(i));
-        //ctx.fillRect(x, y, 32, 32);
-        ctx.fill();
-
-
-        ctx.lineWidth = (i == config.cursorPosition) ? 6 : 1;
-        ctx.stroke();
-
-
-        //ctx.strokeRect(x, y, 32, 32);
-
-        ctx.fillStyle = "black";
-        ctx.textAlign = "center";
-        ctx.font = '10px Arial';
-        ctx.fillText(i, x + cellsize/2, y);
-
-
-        ctx.font = '20px Arial';
-        ctx.fillText(config.getChar(i), x + cellsize/2, y + cellsize*0.7);
-
-        ctx.font = '10px Arial';
-        ctx.fillText(config.getMarks(i), x + cellsize/2, y + cellsize-4);
-
     }
+
+
+    if (domCursor == undefined) {
+        domCursor = document.createElement("div");
+        domCursor.classList.add("cursor");
+        graphics.appendChild(domCursor);
+    }
+}
+function _showConfig(config) {
+    {
+        const domCursorPosition = getDomPosition(config.cursorPosition);
+        domCursor.style.left = domCursorPosition.x + "px";
+        domCursor.style.top = domCursorPosition.y + "px";
+    }
+
+
+    for (let i = 0; i < 128; i++)
+        if ((lastConfig == undefined) || config.tape[i] != lastConfig.tape[i]) {//config.length + 11
+
+            domTape[i].classList.remove("write");
+            domTape[i].classList.add("write");
+
+            domTape[i].innerHTML = config.getChar(i) + "<br/> <div class='marks'>" + config.getMarks(i) + "<div>";
+
+            const getStyle = (char) => {
+                const colors = {};
+                colors["#"] = "rgb(255,164,164)";
+                colors["$"] = "rgb(255,192,128)";
+                colors["-"] = "rgb(255,255,128)";
+
+                if (isDigit(char))
+                    return "lightcyan";
+
+                if (char.endsWith(":"))
+                    return "lightgreen";
+                return colors[char] ? colors[char] : "white";
+            }
+
+
+            domTape[i].style.backgroundColor = getStyle(config.getChar(i))
+
+        }
 }

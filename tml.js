@@ -70,8 +70,13 @@ export function reject() { throw "reject" }
 export function leftmost() { pushConfig(new Configuration(config.tape, 0)); }
 
 export function rightmost() {
+    /*
+while (config.read() != "")
+        pushConfig(config.right();
+    */
     while (config.read() != "")
-        pushConfig(config.right());
+        config = config.right();
+    pushConfig(config);
 }
 
 

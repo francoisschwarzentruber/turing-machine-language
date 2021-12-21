@@ -21,7 +21,7 @@ export class Configuration {
 
     getMarks(i) {
         if (i >= this.tape.length)
-            return "";
+            return [];
         return this.tape[i][1];
     }
 

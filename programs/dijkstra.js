@@ -152,13 +152,14 @@ function queueExtractMin() {
 
     }
 
-    mvtomark("umin");
+    //mvtomark("umin");
+    mvtomarkleft("umin");
     mark("out");
 }
 
 
 TMLBlock.allocate("min");
-write("9"); right(); write("9"); right(); write("9"); right();
+//write("9"); right(); write("9"); right(); write("9"); right();
 
 while (!queueIsEmpty()) {
     queueExtractMin(); //mark with cmin
@@ -172,7 +173,8 @@ while (!queueIsEmpty()) {
 
         if (TMLBlock.equal("umin")) {
             comment("we found a successor of umin");
-            mvtomark("u")
+            //mvtomark("u")
+            mvtomarkleft("u")
             TMLBlock.right();
             right();
             mark("v");
@@ -207,6 +209,7 @@ while (!queueIsEmpty()) {
 
             mvtounmark(["sum", "dv", "du", "weight", "v"]);
         }
+        //mvtomark("u");
         mvtomark("u");
         unmark("u");
         TMLBlock.right();
@@ -222,6 +225,9 @@ while (!queueIsEmpty()) {
 
 
 }
+
+comment("the queue is empty.");
+write("end");
 
 
 
