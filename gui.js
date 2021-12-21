@@ -65,7 +65,7 @@ let domCursor = undefined;
 
 const getDomPosition = (ii) => {
     const cellsize = 35;
-    const nbcolumn = 50;
+    const nbcolumn = 1000;
     const i = ii;//ii - config.cursorPosition + nbcolumn + nbcolumn / 2;
     let y = Math.floor(i / nbcolumn) * cellsize * 2 + 32;
     let x = i % nbcolumn * cellsize + 16;
@@ -106,6 +106,7 @@ function _showConfig(config) {
         domCursor.style.left = domCursorPosition.x + "px";
         domCursor.style.top = domCursorPosition.y + "px";
     }
+    
 
 
     for (let i = 0; i < 128; i++)
