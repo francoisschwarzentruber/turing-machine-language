@@ -5,8 +5,7 @@
     <script type="module" src="gui.js"></script>
     <style>
         body {
-            background-color: black;
-color:white;
+
         }
 
         textarea {
@@ -30,8 +29,7 @@ color:white;
             background-color: "white";
             color: black;
             text-align: center;
-            transition: all 50ms;
-            border-radius: 8px;
+            transition: all 50ms;   
         }
 
 
@@ -69,7 +67,7 @@ color:white;
             width: 35px;
             height: 38px;
             position: absolute;
-            border-bottom: 4px solid white;
+            border-bottom: 4px solid rgb(70, 70, 70);
             transition: all 200ms;
             /*background-color: rgba(255, 255, 255, 0.5);*/
         }
@@ -94,6 +92,7 @@ color:white;
         }
 
         #commentElement {
+            vertical-align: top;
             font-size: 1.2em;
         }
     </style>
@@ -101,14 +100,16 @@ color:white;
 
 <body>
     <h1>Turing machine language</h1>
-    <div id="t"></div>
-    <input style="width: 800px" id="slider" type="range" min="0" max="100" /><br />
+    
+    <input style="width: 100%" id="slider" type="range" min="0" max="100" /><br />
 
+    <div id="t"></div>
     <div id="commentElement"></div>
     
     <div id="graphics"></div>
 
 
+    <button id="loadButton">Load</button>
     <button id="runButton">Run</button><br />
     <textarea id="program" style="vertical-align:top  ;
     display:inline" cols=60 rows=40>

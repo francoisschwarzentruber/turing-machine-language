@@ -16,12 +16,12 @@ const sliderEvent = () => {
     lastConfig = config;
     commentElement.innerHTML = config.comment;
     window.config = config;
-    t.innerHTML = "t = " + slider.value;
+    t.innerHTML = "" + slider.value + " / " + slider.max;
 };
 
 
-function run() {
-    console.log("run")
+function load() {
+    console.log("load")
     init();
     try {
         eval(program.value);
@@ -37,6 +37,36 @@ function run() {
 
 
 
+let runIntervalID = null;
+
+function runLoop() {
+    slider.value++;
+    sliderEvent();
+
+    const t = parseInt(slider.value);
+    const c = execution[t];
+    const c2 = execution[t + 1];
+    
+    const DELAYWHENWRITING = 600;
+    const DELAYWHENOWRITING = 200;
+
+    const delay = c2 ? ((c.tape == c2.tape) ? DELAYWHENOWRITING : DELAYWHENWRITING) : DELAYWHENWRITING;
+    runIntervalID = setTimeout(runLoop, delay);
+}
+
+function run() {
+    if (!runIntervalID) {
+        runLoop();
+    }
+    else {
+        clearTimeout(runIntervalID);
+        runIntervalID = null;
+    }
+
+}
+
+
+
 async function loadProgram(name) {
     const f = await fetch(`programs/${name}.js`);
     const t = await f.text();
@@ -48,6 +78,7 @@ window.onload = () => {
     slider.onchange = sliderEvent;
     slider.oninput = sliderEvent;
     slider.max = 0;
+    loadButton.onclick = load;
     runButton.onclick = run;
     setup();
     init();
@@ -63,19 +94,33 @@ window.onload = () => {
 const domTape = [];
 let domCursor = undefined;
 
+
 const getDomPosition = (ii) => {
     const cellsize = 35;
-    const nbcolumn = 1000;
+    const nbcolumn = 20;
     const i = ii;//ii - config.cursorPosition + nbcolumn + nbcolumn / 2;
-    let y = Math.floor(i / nbcolumn) * cellsize * 2 + 32;
+    const row = Math.floor(i / nbcolumn);
+    let y = row * cellsize * 2 + 32;
     let x = i % nbcolumn * cellsize + 16;
     return { x: x, y: y };
 }
 
 
+/*
+const getDomPosition = (ii) => {
+    const cellsize = 35;
+    const nbcolumn = 20;
+    const i = ii;//ii - config.cursorPosition + nbcolumn + nbcolumn / 2;
+    const row = Math.floor(i / nbcolumn);
+    let y = row * cellsize * 2 + 32;
+    let x = (row % 2 == 0 ? i % nbcolumn : (nbcolumn-1)-i %nbcolumn) * cellsize + 16;
+    return { x: x, y: y };
+}*/
+
+
 
 function setup() {
-    for (let i = 0; i < 128; i++) {//config.length + 11
+    for (let i = 0; i < 80; i++) {//config.length + 11
         if (domTape[i] == undefined) {
             domTape[i] = document.createElement("div");
             domTape[i].classList.add("cell");
@@ -88,7 +133,7 @@ function setup() {
             id.innerHTML = i;
             id.classList.add("id");
             id.style.left = pos.x + "px";
-            id.style.top = pos.y -13 + "px";
+            id.style.top = pos.y - 13 + "px";
             graphics.appendChild(id);
         }
     }
@@ -106,10 +151,10 @@ function _showConfig(config) {
         domCursor.style.left = domCursorPosition.x + "px";
         domCursor.style.top = domCursorPosition.y + "px";
     }
-    
 
 
-    for (let i = 0; i < 128; i++)
+
+    for (let i = 0; i < 80; i++)
         if ((lastConfig == undefined) || config.tape[i] != lastConfig.tape[i]) {//config.length + 11
 
             domTape[i].classList.remove("write");

@@ -34,10 +34,10 @@ while (read() != "$") {
             write("9");
             right();
             write("9");
-            right();
+            /*right();
             write("9");
             right();
-            write("9");
+            write("9");*/
         }
     }
 
